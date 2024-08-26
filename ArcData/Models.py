@@ -1,25 +1,7 @@
 import json
 from typing import Union
 
-
-class Range:
-    def __init__(self, start, end, include_start=True, include_end=True):
-        self.start = start
-        self.end = end
-        self.include_start = include_start
-        self.include_end = include_end
-
-    def verify(self, n: Union[int, float]) -> bool:
-        if self.start <= n <= self.end:
-            if n == self.start:
-                if not self.include_start:
-                    return False
-            elif n == self.end:
-                if not self.include_end:
-                    return False
-            else:
-                return True
-        return False
+from ArcData.Conditions import *
 
 
 class Condition:
@@ -44,6 +26,10 @@ class Record:
             elif isinstance(value, Range):
                 if not isinstance(self._data[key], Union[int, float]) or not value.verify(self._data[key]):
                     return False
+            elif isinstance(value, Union[Include, Exclude]):
+                return value.verify(self._data[key])
+            elif isinstance(value, Any):
+                return True
             elif self._data[key] != value:
                 return False
         return True

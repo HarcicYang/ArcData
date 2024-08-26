@@ -1,4 +1,3 @@
-from typing import BinaryIO
 import os
 
 
@@ -19,7 +18,7 @@ class File:
 
     def verify(self, header: bytes) -> bool:
         with open(self.path, "rb") as file:
-            header_bytes = file.read(5)
+            header_bytes = file.read(len(header))
         if header_bytes == header:
             return True
         return False

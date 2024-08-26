@@ -1,5 +1,5 @@
 from ArcData.Utils.File import File
-from ArcData.Utils.Models import Record, Condition
+from ArcData.Models import Record, Condition
 
 import json
 from typing import Union
