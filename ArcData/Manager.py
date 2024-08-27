@@ -3,6 +3,7 @@ from ArcData.Models import Record, Condition
 
 import json
 from typing import Union
+import pickle
 
 
 class DataBase:
@@ -14,9 +15,11 @@ class DataBase:
     @classmethod
     def create(cls, file: str):
         with open(file, "w", encoding="utf-8") as f:
-            f.write("ARCDB[]")
+            f.write("ARCDB")
 
-        return cls(file)
+        c = cls(file)
+        c.load("__on_create__")
+        return c
 
     @property
     def loaded(self) -> bool:
@@ -34,17 +37,22 @@ class DataBase:
     def __aexit__(self, exc_type, exc_val, exc_tb):
         pass
 
-    def load(self) -> None:
+    def load(self, flag: str = "") -> None:
         if not self.loaded:
             self.file = File(self.file)
-            data = json.loads(self.file.read_hex().decode()[5:])
-            self.data = list(map(Record, data))
+            if flag == "__on_create__":
+                self.data = []
+                return
+            # data = json.loads(self.file.read_hex().decode()[5:])
+            # self.data = list(map(Record, data))
+            self.data = pickle.loads(self.file.read_hex(5))
 
     def save(self) -> None:
         if not self.loaded:
             raise ValueError()
 
-        self.file.write(b"ARCDB" + json.dumps([i.to_json() for i in self.data]).encode())
+        # self.file.write(b"ARCDB" + json.dumps([i.to_json() for i in self.data]).encode())
+        self.file.write(b"ARCDB" + pickle.dumps(self.data))
 
     def search(self, condition: Condition) -> list[Record]:
         return list(filter(lambda record: condition in record, self.data))

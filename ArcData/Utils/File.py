@@ -12,8 +12,10 @@ class File:
                 pass
             self.path = path
 
-    def read_hex(self) -> bytes:
+    def read_hex(self, byte: int = None) -> bytes:
         with open(self.path, "rb") as f:
+            if byte:
+                f.seek(byte)
             return f.read()
 
     def verify(self, header: bytes) -> bool:

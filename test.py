@@ -1,8 +1,10 @@
-from ArcData.Manager import DataBase, Condition
-from ArcData.Models import InRange
+from ArcData.Manager import DataBase
+from ArcData.Models import Record, Condition
+from ArcData.Conditions import *
+
 
 data = DataBase("test.cdb")
 data.load()
 
-print(data.search(Condition(b=InRange(0, 19191801))))
-data.save()
+res = data.search(Condition(name="校溯"))
+print(res)
