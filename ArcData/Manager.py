@@ -1,7 +1,7 @@
 from ArcData.Utils.File import File
 from ArcData.Models import Record, Condition
 
-import json
+# import json
 from typing import Union
 import pickle
 
@@ -54,8 +54,22 @@ class DataBase:
         # self.file.write(b"ARCDB" + json.dumps([i.to_json() for i in self.data]).encode())
         self.file.write(b"ARCDB" + pickle.dumps(self.data))
 
-    def search(self, condition: Condition) -> list[Record]:
-        return list(filter(lambda record: condition in record, self.data))
+    def search(self, *args: Condition) -> list[Record]:
+        res = []
+        for i in list(args):
+            res += list(filter(lambda record: i in record, self.data))
+
+        if len(args) == 1:
+            return res
+        else:
+            def clear(x):
+                if res.count(x) >= 1:
+                    res.remove(x)
+                    return True
+                else:
+                    return False
+
+            return list(filter(lambda record: clear(record), res))
 
     def add(self, record: Record) -> None:
         self.data.append(record)

@@ -6,5 +6,5 @@ from ArcData.Conditions import *
 data = DataBase("test.cdb")
 data.load()
 
-res = data.search(Condition(name="校溯"))
+res = data.search(Condition(nickname=Include("小溯溯")))
 print(res)
