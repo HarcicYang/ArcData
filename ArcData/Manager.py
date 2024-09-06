@@ -5,6 +5,8 @@ from ArcData.Models import Record, Condition
 from typing import Union
 import pickle
 
+base_records: dict[str, "DataBase"] = {}
+
 
 class DataBase:
     def __init__(self, file: str = None, auto_save: bool = False):
@@ -36,6 +38,14 @@ class DataBase:
 
     def __aexit__(self, exc_type, exc_val, exc_tb):
         pass
+
+    @classmethod
+    def fetch(cls, key: str):
+        return base_records.get(key, cls())
+
+    def register(self, key: str) -> "DataBase":
+        base_records[key] = self
+        return self
 
     def load(self, flag: str = "") -> None:
         if not self.loaded:
