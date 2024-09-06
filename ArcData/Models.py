@@ -13,10 +13,13 @@ class Condition:
 
 
 class Record:
-    def __init__(self, data: dict):
+    def __init__(self, data: Union[dict, Any]):
         self._data = data
 
     def __contains__(self, item: Condition):
+        if not isinstance(self._data, dict):
+            return False
+
         for key, value in item.to_json().items():
             if key not in self._data:
                 return False
