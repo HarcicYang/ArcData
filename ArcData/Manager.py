@@ -1,7 +1,7 @@
 from ArcData.Utils.File import File
 from ArcData.Models import Record, Condition
 
-# import json
+import json
 from typing import Union
 import pickle
 
@@ -9,10 +9,11 @@ base_records: dict[str, "DataBase"] = {}
 
 
 class DataBase:
-    def __init__(self, file: str = None, auto_save: bool = False):
+    def __init__(self, file: str = None, auto_save: bool = False, serialization: str = "pickle"):
         self.file: Union[str, File] = file or "data.cdb"
         self.data: list[Record] = []
         self.auto_save = auto_save
+        self.serialization = serialization
 
     @classmethod
     def create(cls, file: str):
@@ -53,16 +54,21 @@ class DataBase:
             if flag == "__on_create__":
                 self.data = []
                 return
-            # data = json.loads(self.file.read_hex().decode()[5:])
-            # self.data = list(map(Record, data))
-            self.data = pickle.loads(self.file.read_hex(5))
+
+            if self.serialization == "pickle":
+                self.data = pickle.loads(self.file.read_hex(5))
+            elif self.serialization == "json":
+                data = json.loads(self.file.read_hex().decode()[5:])
+                self.data = list(map(Record, data))
 
     def save(self) -> None:
         if not self.loaded:
             raise ValueError()
 
-        # self.file.write(b"ARCDB" + json.dumps([i.to_json() for i in self.data]).encode())
-        self.file.write(b"ARCDB" + pickle.dumps(self.data))
+        if self.serialization == "pickle":
+            self.file.write(b"ARCDB" + pickle.dumps(self.data))
+        elif self.serialization == "json":
+            self.file.write(b"ARCDB" + json.dumps([i.to_json() for i in self.data]).encode())
 
     def search(self, *args: Condition) -> list[Record]:
         res = []
