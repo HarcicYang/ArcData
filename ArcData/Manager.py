@@ -1,5 +1,5 @@
 from ArcData.Utils.File import File
-from ArcData.Models import Record, Condition
+from ArcData.Utils.Models import Record, Condition, Serializations
 
 import json
 from typing import Union
@@ -9,7 +9,9 @@ base_records: dict[str, "DataBase"] = {}
 
 
 class DataBase:
-    def __init__(self, file: str = None, auto_save: bool = False, serialization: str = "pickle"):
+    def __init__(
+            self, file: str = None, auto_save: bool = False, serialization: Serializations = Serializations.pickle
+    ):
         self.file: Union[str, File] = file or "data.cdb"
         self.data: list[Record] = []
         self.auto_save = auto_save
@@ -55,9 +57,9 @@ class DataBase:
                 self.data = []
                 return
 
-            if self.serialization == "pickle":
+            if self.serialization == Serializations.pickle:
                 self.data = pickle.loads(self.file.read_hex(5))
-            elif self.serialization == "json":
+            elif self.serialization == Serializations.json:
                 data = json.loads(self.file.read_hex().decode()[5:])
                 self.data = list(map(Record, data))
 
@@ -65,9 +67,9 @@ class DataBase:
         if not self.loaded:
             raise ValueError()
 
-        if self.serialization == "pickle":
+        if self.serialization == Serializations.pickle:
             self.file.write(b"ARCDB" + pickle.dumps(self.data))
-        elif self.serialization == "json":
+        elif self.serialization == Serializations.json:
             self.file.write(b"ARCDB" + json.dumps([i.to_json() for i in self.data]).encode())
 
     def search(self, *args: Condition) -> list[Record]:

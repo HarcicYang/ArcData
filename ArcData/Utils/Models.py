@@ -1,5 +1,6 @@
 import json
 from typing import Union
+from enum import Enum
 
 from ArcData.Conditions import *
 
@@ -63,3 +64,8 @@ class Record:
 
     def __repr__(self):
         return f"{self.__class__.__name__}({self._data})"
+
+
+class Serializations(Enum):
+    json = "json"
+    pickle = "pickle"
