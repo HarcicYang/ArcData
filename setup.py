@@ -11,6 +11,6 @@ setup(
     author="Harcic",
     author_email="harcic@outlook.com",
     url="https://github.com/HarcicYang/ArcData",
-    packages=["ArcData"],
+    packages=["ArcData", "ArcData.Utils"],
     include_package_data=True,
 )
